@@ -1,0 +1,30 @@
+{
+    "name": "opsway/yesbank-api",
+    "description": "PHP SDK for YesBank API",
+    "keywords": ["YesBank", "API", "SDK", "library"],
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^7.4",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^6.5",
+        "netresearch/jsonmapper": "^1.6"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "OpsWay\\YesBank\\": "src/"
+        }
+    },
+    "scripts": {
+        "phpcs": "vendor/bin/phpcs --standard=PSR2 --extensions=php --encoding=utf-8 -p ./src"
+    },
+    "config": {
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    }
+}
