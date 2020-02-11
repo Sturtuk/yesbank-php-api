@@ -4,6 +4,10 @@
     "keywords": ["YesBank", "API", "SDK", "library"],
     "type": "library",
     "license": "MIT",
+    "support": {
+        "source": "https://github.com/boodmo/yesbank-php-api",
+        "issues": "https://github.com/boodmo/yesbank-php-api/issues"
+    },
     "require": {
         "php": "^7.4",
         "ext-json": "*",
