@@ -18,14 +18,15 @@ use OpsWay\YesBank\Transport;
 
 // Prepare config for connection
 $config = new Config('https://uatsky.yesbank.in/app/uat', '<CLIENT_ID>', '<SECRET>', '<CUSTOMER_ID>', '<APP_ID>');
-$config->setBasicAuthLogin('testclient');       // Optional
-$config->setBasicAuthPassword('OxYcool@123');   // Optional
+$config->setBasicAuthLogin('<BASIC_AUTH_LOGIN>');          // Optional
+$config->setBasicAuthPassword('<BASIC_AUTH_PASSWORD>');    // Optional
 
 $transport = new Transport($config);
 $api = new Api($transport);
 ```
 
-### Get Balance
+### Fund Transfer
+#### Get Balance
 ```php
 $balance = $api->fundTransfer()->getBalance('<ACCOUNT_NUMBER>');
 
@@ -38,7 +39,7 @@ $balance = $api->fundTransfer()->getBalance('<ACCOUNT_NUMBER>');
 // )
 ```
 
-### Start Transfer
+#### Start Transfer
 ```php
 use OpsWay\YesBank\Api\Dto\BeneficiaryDto;
 
@@ -66,7 +67,7 @@ $transfer = $api->fundTransfer()->startTransfer(
 // )
 ```
 
-### Get transfer status
+#### Get transfer status
 ```php
 $status = $api->fundTransfer()->getTransferStatus('<UNIQUE_REQUEST_NUMBER>');
 
@@ -86,6 +87,114 @@ $status = $api->fundTransfer()->getTransferStatus('<UNIQUE_REQUEST_NUMBER>');
 //             [bankReferenceNo] =>
 //             [beneficiaryReferenceNo] =>
 //         )
+// )
+```
+
+### Maintain Beneficiary
+Some code preparations:
+```php
+// Prepare bank and beneficiary 
+use OpsWay\YesBank\Api\Dto\BankDto;
+use OpsWay\YesBank\Api\Dto\BeneficiaryDto;
+
+$beneficiary = new BeneficiaryDto;
+$beneficiary->code = '<BENEFICIARY_CODE>';
+$beneficiary->name = '<BENEFICIARY_NAME>';
+$beneficiary->type = '<BENEFICIARY_TYPE>';
+$beneficiary->accountNo = '<BENEFICIARY_ACCOUNT_NO>';
+
+$bank = new BankDto();
+$bank->name = '<BANK_NAME>';
+$bank->ifscCode = '<BANK_IFSC_CODE>';
+
+// You can change some transport config params (optional)
+$api->getTransport()->getConfig()->setBasicAuthLogin('<BASIC_AUTH_LOGIN>');
+$api->getTransport()->getConfig()->setBasicAuthPassword('<BASIC_AUTH_PASSWORD>');
+```
+
+#### Add Beneficiary
+```php
+$result = $api->maintainBeneficiary()->add('<ACCOUNT_NUMBER>', $beneficiary, $bank, '<AMOUNT>', '<CURRENCY_CODE>', '<PAYMENT_TYPE>');
+
+// Result: OpsWay\YesBank\Api\Dto\MaintainBeneficiaryResponseDto Object
+// (
+//    [requestStatus] => SUCCESS
+//    [custId] => <CUSTOMER_ID>
+//    [srcAccountNo] => <ACCOUNT_NUMBER>
+//    [beneficiaryCd] => <BENEFICIARY_CODE>
+//    [beneName] => <BENEFICIARY_NAME>
+//    [beneType] => <BENEFICIARY_TYPE>
+//    [beneAccountNo] => <BENEFICIARY_ACCOUNT_NO>
+//    [bankName] => <BANK_NAME>
+//    [ifscCode] => <BANK_IFSC_CODE>
+//    [transactionLimit] => <AMOUNT>
+//    [currencyCd] => <CURRENCY_CODE>
+//    [action] => ADD
+//    [error] => stdClass Object()
+// )
+```
+
+#### Modify Beneficiary
+```php
+$result = $api->maintainBeneficiary()->modify('<ACCOUNT_NUMBER>', $beneficiary, $bank, '<AMOUNT>', '<CURRENCY_CODE>', '<PAYMENT_TYPE>');
+
+// Result: OpsWay\YesBank\Api\Dto\MaintainBeneficiaryResponseDto Object
+// (
+//    [requestStatus] => SUCCESS
+//    [reqRefNo] => <REQUEST_REFERENCE_NO>
+//    [custId] => <CUSTOMER_ID>
+//    [srcAccountNo] => <ACCOUNT_NUMBER>
+//    [beneficiaryCd] => <BENEFICIARY_CODE>
+//    [beneName] => <BENEFICIARY_NAME>
+//    [beneType] => <BENEFICIARY_TYPE>
+//    [beneAccountNo] => <BENEFICIARY_ACCOUNT_NO>
+//    [bankName] => <BANK_NAME>
+//    [ifscCode] => <BANK_IFSC_CODE>
+//    [transactionLimit] => <AMOUNT>
+//    [currencyCd] => <CURRENCY_CODE>
+//    [action] => MODIFY
+//    [error] => stdClass Object()
+// )
+```
+
+#### Verify Beneficiary
+```php
+$result = $api->maintainBeneficiary()->verify('<ACCOUNT_NUMBER>', $beneficiary, $bank, '<AMOUNT>', '<CURRENCY_CODE>', '<PAYMENT_TYPE>');
+
+// Result: OpsWay\YesBank\Api\Dto\MaintainBeneficiaryResponseDto Object
+// (
+//    [requestStatus] => SUCCESS
+//    [reqRefNo] => <REQUEST_REFERENCE_NO>
+//    [custId] => <CUSTOMER_ID>
+//    [srcAccountNo] => <ACCOUNT_NUMBER>
+//    [beneficiaryCd] => <BENEFICIARY_CODE>
+//    [beneName] => <BENEFICIARY_NAME>
+//    [beneType] => <BENEFICIARY_TYPE>
+//    [beneAccountNo] => <BENEFICIARY_ACCOUNT_NO>
+//    [bankName] => <BANK_NAME>
+//    [ifscCode] => <BANK_IFSC_CODE>
+//    [transactionLimit] => <AMOUNT>
+//    [currencyCd] => <CURRENCY_CODE>
+//    [action] => Verify
+//    [error] => stdClass Object()
+// )
+```
+
+#### Disable Beneficiary
+Note: In order to enable a disabled beneficiary, perform a `modify` operation on the beneficiary.
+
+```php
+$result = $api->maintainBeneficiary()->disable('<ACCOUNT_NUMBER>', '<BENEFICIARY_CODE>', '<PAYMENT_TYPE>');
+
+// Result: OpsWay\YesBank\Api\Dto\MaintainBeneficiaryResponseDto Object
+// (
+//    [requestStatus] => SUCCESS
+//    [reqRefNo] => <REQUEST_REFERENCE_NO>
+//    [custId] => <CUSTOMER_ID>
+//    [srcAccountNo] => <ACCOUNT_NUMBER>
+//    [beneficiaryCd] => <BENEFICIARY_CODE>
+//    [action] => DISABLE
+//    [error] => stdClass Object()
 // )
 ```
 

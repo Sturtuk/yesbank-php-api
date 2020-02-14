@@ -6,6 +6,7 @@ namespace OpsWay\YesBank;
 
 use GuzzleHttp\Client as BaseClient;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use OpsWay\YesBank\Exception\ApiException;
 use Psr\Http\Message\ResponseInterface;
 
@@ -36,8 +37,7 @@ class Transport
      * @param $data
      * @return object
      * @throws ApiException
-     * @throws InvalidJsonException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function sendPost(string $endpoint, $data): object
     {

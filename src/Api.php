@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpsWay\YesBank;
 
 use OpsWay\YesBank\Api\FundTransfer;
+use OpsWay\YesBank\Api\MaintainBeneficiary;
 
 class Api
 {
@@ -21,6 +22,14 @@ class Api
     public function fundTransfer(): FundTransfer
     {
         return new FundTransfer($this);
+    }
+
+    /**
+     * @return MaintainBeneficiary
+     */
+    public function maintainBeneficiary(): MaintainBeneficiary
+    {
+        return new MaintainBeneficiary($this);
     }
 
     /**
