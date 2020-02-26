@@ -12,6 +12,7 @@ use OpsWay\YesBank\Api\Dto\BankDto;
 use OpsWay\YesBank\Api\Dto\BeneficiaryDto;
 use OpsWay\YesBank\Config;
 use OpsWay\YesBank\Exception\ApiException;
+use OpsWay\YesBank\Exception\Beneficiary as BeneficiaryException;
 
 use function GuzzleHttp\json_decode;
 
@@ -203,9 +204,21 @@ class MaintainBeneficiary
         $errors = json_decode($faultData);
         $error = array_shift($errors);
 
-        $code = $error->ErrorSubCode ?? 0;
-        $message = $error->GeneralMsg ?? 'Unexpected error';
+        $code = $error->ErrorSubCode ?? '';
+        $message = 'Unknown error';
+        if (isset($error->GeneralMsg)) {
+            $message = $error->GeneralMsg;
+        } elseif (isset($error->Reason)) {
+            $message = $error->Reason;
+        }
 
-        return new ApiException(sprintf('[Error %s] %s', $code, $message));
+        switch ($code) {
+            case '102': // Beneficiary does not exist
+                return new BeneficiaryException\NotExistException($message, $code);
+            case '800': // Account number is not mapped with customer ID
+                return new BeneficiaryException\AccountNotMappedException($message, $code);
+        }
+
+        return new ApiException($message, $code);
     }
 }

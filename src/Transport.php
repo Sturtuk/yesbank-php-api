@@ -8,6 +8,7 @@ use GuzzleHttp\Client as BaseClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use OpsWay\YesBank\Exception\ApiException;
+use OpsWay\YesBank\Exception\Common as CommonException;
 use Psr\Http\Message\ResponseInterface;
 
 use function GuzzleHttp\json_decode;
@@ -43,6 +44,7 @@ class Transport
     {
         $options = [
             'allow_redirects' => true,
+            'http_errors' => false,
             'timeout' => 10,
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -57,7 +59,20 @@ class Transport
             $options['auth'] = [$this->config->getBasicAuthLogin(), $this->config->getBasicAuthPassword()];
         }
 
-        return $this->processResponse($this->httpClient->request('POST', $this->prepareEndpoint($endpoint), $options));
+        $response = $this->httpClient->request('POST', $this->prepareEndpoint($endpoint), $options);
+        if ($response->getStatusCode() === 200) {
+            return $this->processResponse($response);
+        }
+
+        switch ($response->getStatusCode()) {
+            case 401:
+                throw new CommonException\UnauthorizedException(
+                    $response->getReasonPhrase(),
+                    'http:' . $response->getStatusCode()
+                );
+        }
+
+        throw new CommonException\ServerErrorException($response->getReasonPhrase());
     }
 
     /**
@@ -70,7 +85,7 @@ class Transport
         try {
             $responseObject = json_decode($response->getBody());
         } catch (\Throwable $e) {
-            throw new ApiException('Invalid JSON response', 503);
+            throw new ApiException('Invalid JSON response');
         }
 
         if (isset($responseObject->Fault)) {
@@ -95,10 +110,28 @@ class Transport
      */
     protected function convertErrorToException(object $faultData): ApiException
     {
-        $code = $faultData->Code->Subcode->Subcode->Value ?? null;
-        $message = $faultData->Reason->Text ?? 'Unexpected error';
-        $details = $faultData->Detail->MessageList ?? 'Failed to parse API error. Please check problem manually.';
+        $code = $faultData->Code->Subcode->Value ?? '';
+        $subCode = $faultData->Code->Subcode->Subcode->Value ?? '';
+        $faultCode = $code . ((!empty($subCode)) ? '-' . $subCode : '');
 
-        return new ApiException(sprintf('[%s] %s: %s', $code, $message, $details));
+        $message = $faultData->Reason->Text ?? 'Unknown error';
+        $details = $faultData->Detail->MessageList ?? '';
+
+        switch ($code) {
+            case 'ns:E400':
+                return new CommonException\BadRequestException($message, $faultCode, $details);
+            case 'ns:E402':
+                return new CommonException\InsufficientBalanceException($message, $faultCode, $details);
+            case 'ns:E403':
+                return new CommonException\ForbiddenException($message, $faultCode, $details);
+            case 'ns:E405':
+                return new CommonException\NotAllowedTransferTypeException($message, $faultCode, $details);
+            case 'ns:E406':
+                return new CommonException\BeneficiaryNotAcceptable($message, $faultCode, $details);
+            case 'ns:E429':
+                return new CommonException\DailyLimitExceededException($message, $faultCode, $details);
+        }
+
+        return new ApiException($message, $faultCode, $details);
     }
 }
