@@ -59,12 +59,12 @@ class MaintainBeneficiaryResponseDto
     /**
      * @var float
      */
-    public float $transactionLimit;
+    public float $transactionLimit = 0;
 
     /**
      * @var string
      */
-    public string $currencyCd;
+    public string $currencyCd = '';
 
     /**
      * @var string

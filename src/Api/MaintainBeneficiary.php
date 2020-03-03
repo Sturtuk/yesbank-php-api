@@ -36,9 +36,9 @@ class MaintainBeneficiary
      * @param string $sourceAccountNo
      * @param BeneficiaryDto $beneficiary
      * @param BankDto $bank
-     * @param float $amount
-     * @param string $currency
      * @param string $paymentType
+     * @param float|null $transactionLimit
+     * @param string|null $currency
      * @return Dto\MaintainBeneficiaryResponseDto
      * @throws ApiException
      * @throws GuzzleException
@@ -48,20 +48,43 @@ class MaintainBeneficiary
         string $sourceAccountNo,
         BeneficiaryDto $beneficiary,
         BankDto $bank,
-        float $amount,
-        string $currency = 'INR',
-        string $paymentType = 'OTHR'
+        string $paymentType,
+        ?float $transactionLimit = null,
+        ?string $currency = null
     ): Dto\MaintainBeneficiaryResponseDto {
-        return $this->sendRequest('ADD', $sourceAccountNo, $beneficiary, $bank, $amount, $currency, $paymentType);
+        $data = [
+            'CustId' => $this->config->getCustomerId(),
+            'BeneficiaryCd' => $beneficiary->code,
+            'SrcAccountNo' => $sourceAccountNo,
+            'PaymentType' => $paymentType,
+            'BeneName' => $beneficiary->name,
+            'BeneType' => $beneficiary->type,
+            'BankName' => $bank->name,
+            'IfscCode' => $bank->ifscCode,
+            'BeneAccountNo' => $beneficiary->accountNo,
+            'Action' => 'ADD',
+        ];
+
+        if ($currency !== null) {
+            $data['CurrencyCd'] = $currency;
+        }
+
+        if ($transactionLimit !== null && $transactionLimit > 0) {
+            $data['TransactionLimit'] = $transactionLimit;
+        }
+
+        $rawResult = $this->api->getTransport()->sendPost(self::ENDPOINT_BENE, ['maintainBene' => $data]);
+
+        return $this->processResult($rawResult);
     }
 
     /**
      * @param string $sourceAccountNo
      * @param BeneficiaryDto $beneficiary
      * @param BankDto $bank
-     * @param float $amount
-     * @param string $currency
      * @param string $paymentType
+     * @param float|null $transactionLimit
+     * @param string|null $currency
      * @return Dto\MaintainBeneficiaryResponseDto
      * @throws ApiException
      * @throws GuzzleException
@@ -71,19 +94,39 @@ class MaintainBeneficiary
         string $sourceAccountNo,
         BeneficiaryDto $beneficiary,
         BankDto $bank,
-        float $amount,
-        string $currency = 'INR',
-        string $paymentType = 'OTHR'
+        string $paymentType,
+        ?float $transactionLimit = null,
+        ?string $currency = null
     ): Dto\MaintainBeneficiaryResponseDto {
-        return $this->sendRequest('MODIFY', $sourceAccountNo, $beneficiary, $bank, $amount, $currency, $paymentType);
+        $data = [
+            'CustId' => $this->config->getCustomerId(),
+            'BeneficiaryCd' => $beneficiary->code,
+            'SrcAccountNo' => $sourceAccountNo,
+            'PaymentType' => $paymentType,
+            'BeneName' => $beneficiary->name,
+            'BeneType' => $beneficiary->type,
+            'BankName' => $bank->name,
+            'IfscCode' => $bank->ifscCode,
+            'BeneAccountNo' => $beneficiary->accountNo,
+            'Action' => 'MODIFY',
+        ];
+
+        if ($currency !== null) {
+            $data['CurrencyCd'] = $currency;
+        }
+
+        if ($transactionLimit !== null && $transactionLimit > 0) {
+            $data['TransactionLimit'] = $transactionLimit;
+        }
+
+        $rawResult = $this->api->getTransport()->sendPost(self::ENDPOINT_BENE, ['maintainBene' => $data]);
+
+        return $this->processResult($rawResult);
     }
 
     /**
      * @param string $sourceAccountNo
-     * @param BeneficiaryDto $beneficiary
-     * @param BankDto $bank
-     * @param float $amount
-     * @param string $currency
+     * @param string $beneficiaryCode
      * @param string $paymentType
      * @return Dto\MaintainBeneficiaryResponseDto
      * @throws ApiException
@@ -92,13 +135,21 @@ class MaintainBeneficiary
      */
     public function verify(
         string $sourceAccountNo,
-        BeneficiaryDto $beneficiary,
-        BankDto $bank,
-        float $amount,
-        string $currency = 'INR',
-        string $paymentType = 'OTHR'
+        string $beneficiaryCode,
+        string $paymentType
     ): Dto\MaintainBeneficiaryResponseDto {
-        return $this->sendRequest('VERIFY', $sourceAccountNo, $beneficiary, $bank, $amount, $currency, $paymentType);
+        $rawResult = $this->api->getTransport()->sendPost(
+            self::ENDPOINT_BENE,
+            ['maintainBene' => [
+                'CustId' => $this->config->getCustomerId(),
+                'BeneficiaryCd' => $beneficiaryCode,
+                'SrcAccountNo' => $sourceAccountNo,
+                'PaymentType' => $paymentType,
+                'Action' => 'VERIFY',
+            ]]
+        );
+
+        return $this->processResult($rawResult);
     }
 
     /**
@@ -113,7 +164,7 @@ class MaintainBeneficiary
     public function disable(
         string $sourceAccountNo,
         string $beneficiaryCode,
-        string $paymentType = 'OTHR'
+        string $paymentType
     ): Dto\MaintainBeneficiaryResponseDto {
         $rawResult = $this->api->getTransport()->sendPost(
             self::ENDPOINT_BENE,
@@ -123,49 +174,6 @@ class MaintainBeneficiary
                 'SrcAccountNo' => $sourceAccountNo,
                 'PaymentType' => $paymentType,
                 'Action' => 'DISABLE',
-            ]],
-        );
-
-        return $this->processResult($rawResult);
-    }
-
-    /**
-     * @param string $actionType
-     * @param string $sourceAccountNo
-     * @param BeneficiaryDto $beneficiary
-     * @param BankDto $bank
-     * @param float $amount
-     * @param string $currency
-     * @param string $paymentType
-     * @return Dto\MaintainBeneficiaryResponseDto
-     * @throws ApiException
-     * @throws GuzzleException
-     * @throws JsonMapper_Exception
-     */
-    protected function sendRequest(
-        string $actionType,
-        string $sourceAccountNo,
-        BeneficiaryDto $beneficiary,
-        BankDto $bank,
-        float $amount,
-        string $currency = 'INR',
-        string $paymentType = 'OTHR'
-    ): Dto\MaintainBeneficiaryResponseDto {
-        $rawResult = $this->api->getTransport()->sendPost(
-            self::ENDPOINT_BENE,
-            ['maintainBene' => [
-                'CustId' => $this->config->getCustomerId(),
-                'BeneficiaryCd' => $beneficiary->code,
-                'SrcAccountNo' => $sourceAccountNo,
-                'PaymentType' => $paymentType,
-                'BeneName' => $beneficiary->name,
-                'BeneType' => $beneficiary->type,
-                'CurrencyCd' => $currency,
-                'TransactionLimit' => $amount,
-                'BankName' => $bank->name,
-                'IfscCode' => $bank->ifscCode,
-                'BeneAccountNo' => $beneficiary->accountNo,
-                'Action' => $actionType,
             ]],
         );
 
