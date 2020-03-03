@@ -21,7 +21,7 @@ $config = new Config('https://uatsky.yesbank.in/app/uat', '<CLIENT_ID>', '<SECRE
 $config->setBasicAuthLogin('<BASIC_AUTH_LOGIN>');          // Optional
 $config->setBasicAuthPassword('<BASIC_AUTH_PASSWORD>');    // Optional
 
-$transport = new Transport($config);
+$transport = new Transport\HttpTransport($config);
 $api = new Api($transport);
 ```
 
@@ -159,7 +159,7 @@ $result = $api->maintainBeneficiary()->modify('<ACCOUNT_NUMBER>', $beneficiary, 
 
 #### Verify Beneficiary
 ```php
-$result = $api->maintainBeneficiary()->verify('<ACCOUNT_NUMBER>', $beneficiary, $bank, '<AMOUNT>', '<CURRENCY_CODE>', '<PAYMENT_TYPE>');
+$result = $api->maintainBeneficiary()->verify('<ACCOUNT_NUMBER>', '<BENEFICIARY_CODE>', '<PAYMENT_TYPE>');
 
 // Result: OpsWay\YesBank\Api\Dto\MaintainBeneficiaryResponseDto Object
 // (

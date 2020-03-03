@@ -221,6 +221,8 @@ class MaintainBeneficiary
         }
 
         switch ($code) {
+            case '101': // Beneficiary already exists
+                return new BeneficiaryException\AlreadyExistsException($message, $code);
             case '102': // Beneficiary does not exist
                 return new BeneficiaryException\NotExistException($message, $code);
             case '800': // Account number is not mapped with customer ID

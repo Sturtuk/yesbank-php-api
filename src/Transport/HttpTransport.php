@@ -2,19 +2,21 @@
 
 declare(strict_types=1);
 
-namespace OpsWay\YesBank;
+namespace OpsWay\YesBank\Transport;
 
 use GuzzleHttp\Client as BaseClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use OpsWay\YesBank\Config;
 use OpsWay\YesBank\Exception\ApiException;
 use OpsWay\YesBank\Exception\Common as CommonException;
+use OpsWay\YesBank\TransportInterface;
 use Psr\Http\Message\ResponseInterface;
 
 use function GuzzleHttp\json_decode;
 use function GuzzleHttp\json_encode;
 
-class Transport
+class HttpTransport implements TransportInterface
 {
     protected ClientInterface $httpClient;
     protected Config $config;

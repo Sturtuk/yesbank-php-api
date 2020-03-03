@@ -9,9 +9,9 @@ use OpsWay\YesBank\Api\MaintainBeneficiary;
 
 class Api
 {
-    protected Transport $transport;
+    protected TransportInterface $transport;
 
-    public function __construct(Transport $transport)
+    public function __construct(TransportInterface $transport)
     {
         $this->transport = $transport;
     }
@@ -33,9 +33,9 @@ class Api
     }
 
     /**
-     * @return Transport
+     * @return TransportInterface
      */
-    public function getTransport(): Transport
+    public function getTransport(): TransportInterface
     {
         return $this->transport;
     }
