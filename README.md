@@ -22,6 +22,10 @@ $config = new Config('https://uatsky.yesbank.in/app/uat', '<CLIENT_ID>', '<SECRE
 $config->setBasicAuthLogin('<BASIC_AUTH_LOGIN>');          // Optional
 $config->setBasicAuthPassword('<BASIC_AUTH_PASSWORD>');    // Optional
 
+// Add certificate and private key (optional)
+$config->setSslCert('/path/to/your.crt');
+$config->setSslKey('/path/to/your.key');
+
 $transport = new HttpTransport($config);
 // or you can use mocked transport
 // $transport = new MockTransport($jsonResponse);

@@ -13,6 +13,8 @@ class Config
     protected string $appId;
     protected ?string $basicAuthLogin;
     protected ?string $basicAuthPass;
+    protected ?string $sslCert;
+    protected ?string $sslKey;
 
     public function __construct(
         string $baseUrl,
@@ -28,6 +30,8 @@ class Config
         $this->appId = $appId;
         $this->basicAuthLogin = null;
         $this->basicAuthPass = null;
+        $this->sslCert = null;
+        $this->sslKey = null;
     }
 
     public function getBaseUrl(): string
@@ -110,6 +114,30 @@ class Config
     public function setBasicAuthPassword(?string $authPass): self
     {
         $this->basicAuthPass = $authPass;
+
+        return $this;
+    }
+
+    public function getSslCert(): ?string
+    {
+        return $this->sslCert;
+    }
+
+    public function setSslCert(?string $cert): self
+    {
+        $this->sslCert = $cert;
+
+        return $this;
+    }
+
+    public function getSslKey(): ?string
+    {
+        return $this->sslKey;
+    }
+
+    public function setSslKey(?string $key): self
+    {
+        $this->sslKey = $key;
 
         return $this;
     }

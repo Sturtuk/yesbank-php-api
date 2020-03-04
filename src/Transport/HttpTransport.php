@@ -54,8 +54,15 @@ class HttpTransport implements TransportInterface
                 'X-IBM-Client-Secret' => $this->config->getClientSecret(),
             ],
             'body' => json_encode($data),
-            // ToDo: Certificates
         ];
+
+        if ($sslCert = $this->config->getSslCert()) {
+            $options['cert'] = $sslCert;
+        }
+
+        if ($sslKey = $this->config->getSslKey()) {
+            $options['ssl_key'] = $sslKey;
+        }
 
         if ($this->config->getBasicAuthLogin() !== null && $this->config->getBasicAuthPassword() !== null) {
             $options['auth'] = [$this->config->getBasicAuthLogin(), $this->config->getBasicAuthPassword()];
