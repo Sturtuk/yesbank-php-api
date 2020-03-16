@@ -64,6 +64,10 @@ class HttpTransport implements TransportInterface
             $options['ssl_key'] = $sslKey;
         }
 
+        if ($caCert = $this->config->getCaCert()) {
+            $options['verify'] = $caCert;
+        }
+
         if ($this->config->getBasicAuthLogin() !== null && $this->config->getBasicAuthPassword() !== null) {
             $options['auth'] = [$this->config->getBasicAuthLogin(), $this->config->getBasicAuthPassword()];
         }

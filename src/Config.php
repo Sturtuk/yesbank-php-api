@@ -11,10 +11,11 @@ class Config
     protected string $clientSecret;
     protected string $customerId;
     protected string $appId;
-    protected ?string $basicAuthLogin;
-    protected ?string $basicAuthPass;
-    protected ?string $sslCert;
-    protected ?string $sslKey;
+    protected ?string $basicAuthLogin = null;
+    protected ?string $basicAuthPass = null;
+    protected ?string $sslCert = null;
+    protected ?string $sslKey = null;
+    protected ?string $caCert = null;
 
     public function __construct(
         string $baseUrl,
@@ -28,10 +29,6 @@ class Config
         $this->clientSecret = $clientSecret;
         $this->customerId = $customerId;
         $this->appId = $appId;
-        $this->basicAuthLogin = null;
-        $this->basicAuthPass = null;
-        $this->sslCert = null;
-        $this->sslKey = null;
     }
 
     public function getBaseUrl(): string
@@ -138,6 +135,18 @@ class Config
     public function setSslKey(?string $key): self
     {
         $this->sslKey = $key;
+
+        return $this;
+    }
+
+    public function getCaCert(): ?string
+    {
+        return $this->caCert;
+    }
+
+    public function setCaCert(?string $caCert): self
+    {
+        $this->caCert = $caCert;
 
         return $this;
     }

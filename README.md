@@ -26,6 +26,9 @@ $config->setBasicAuthPassword('<BASIC_AUTH_PASSWORD>');    // Optional
 $config->setSslCert('/path/to/your.crt');
 $config->setSslKey('/path/to/your.key');
 
+// Add CA certificate (optional)
+$config->setCaCert('/path/to/cainfo.crt');
+
 $transport = new HttpTransport($config);
 // or you can use mocked transport
 // $transport = new MockTransport($jsonResponse);
