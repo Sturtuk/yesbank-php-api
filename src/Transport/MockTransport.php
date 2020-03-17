@@ -25,6 +25,6 @@ class MockTransport implements TransportInterface
 
     public function getConfig(): Config
     {
-        return new Config('', '', '', '', '');
+        return new Config(true, '', '', '', '');
     }
 }
