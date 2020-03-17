@@ -18,7 +18,7 @@ use OpsWay\YesBank\Transport\HttpTransport;
 use OpsWay\YesBank\Transport\MockTransport;
 
 // Prepare config for connection
-$config = new Config('https://uatsky.yesbank.in/app/uat', '<CLIENT_ID>', '<SECRET>', '<CUSTOMER_ID>', '<APP_ID>');
+$config = new Config('<IS_PROD_MODE>', '<CLIENT_ID>', '<SECRET>', '<CUSTOMER_ID>', '<APP_ID>');
 $config->setBasicAuthLogin('<BASIC_AUTH_LOGIN>');          // Optional
 $config->setBasicAuthPassword('<BASIC_AUTH_PASSWORD>');    // Optional
 

@@ -6,7 +6,7 @@ namespace OpsWay\YesBank;
 
 class Config
 {
-    protected string $baseUrl;
+    protected bool $isProdMode;
     protected string $clientId;
     protected string $clientSecret;
     protected string $customerId;
@@ -18,27 +18,27 @@ class Config
     protected ?string $caCert = null;
 
     public function __construct(
-        string $baseUrl,
+        bool $isProdMode,
         string $clientId,
         string $clientSecret,
         string $customerId,
         string $appId
     ) {
-        $this->baseUrl = $baseUrl;
+        $this->isProdMode = $isProdMode;
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
         $this->customerId = $customerId;
         $this->appId = $appId;
     }
 
-    public function getBaseUrl(): string
+    public function isProdMode(): bool
     {
-        return $this->baseUrl;
+        return $this->isProdMode;
     }
 
-    public function setBaseUrl(string $baseUrl): self
+    public function switchProdMode(bool $prodMode): self
     {
-        $this->baseUrl = $baseUrl;
+        $this->isProdMode = $prodMode;
 
         return $this;
     }

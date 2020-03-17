@@ -18,6 +18,9 @@ use function GuzzleHttp\json_encode;
 
 class HttpTransport implements TransportInterface
 {
+    protected const API_HOST_PROD = 'https://sky.yesbank.in:444/app/live';
+    protected const API_HOST_UAT  = 'https://uatsky.yesbank.in/app/uat';
+
     protected ClientInterface $httpClient;
     protected Config $config;
 
@@ -114,7 +117,7 @@ class HttpTransport implements TransportInterface
      */
     protected function prepareEndpoint(string $endpoint): string
     {
-        return rtrim($this->config->getBaseUrl(), '/') . $endpoint;
+        return (($this->config->isProdMode()) ? self::API_HOST_PROD : self::API_HOST_UAT) . $endpoint;
     }
 
     /**
